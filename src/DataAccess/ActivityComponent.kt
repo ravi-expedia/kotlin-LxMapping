@@ -1,5 +1,6 @@
 package DataAccess
 
+import org.w3c.dom.Element
 import java.io.File
 import java.time.LocalTime
 import java.util.Date
@@ -138,6 +139,29 @@ class ActivityComponent{
         return Date(null)
     }
 
+    fun getVoucherBarCode(): String {
+        parseXml(fileHandler)
+                .evaluateIterator("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/VoucherBarCode")
+                .sequence()
+                .filterIsElement()
+                .forEach {
+                    return (it.getTextContent());
+                }
+        return ""
+    }
 
+    fun getVoucherSecurityCode(): String {
+        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherSecurityCode")
+        .forEach {
+            return (it.getTextContent());
+        }
+        return ""
+    }
 
+    fun getElementFromFile(evaluateXPath: String) :  Sequence<Element> {
+        return parseXml(fileHandler)
+                .evaluateIterator(evaluateXPath)
+                .sequence()
+                .filterIsElement()
+    }
 }
