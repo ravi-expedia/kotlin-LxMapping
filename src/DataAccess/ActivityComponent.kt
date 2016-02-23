@@ -2,11 +2,12 @@ package DataAccess
 
 import org.w3c.dom.Element
 import java.io.File
-import java.time.LocalTime
-import java.util.Date
 import kotlin.dom.parseXml
 import kotlin.dom.xpath.evaluateIterator
 import kotlin.dom.xpath.filterIsElement
+import org.joda.time.DateTime
+import org.joda.time.LocalTime
+
 
 
 /**
@@ -14,15 +15,11 @@ import kotlin.dom.xpath.filterIsElement
  */
 
 class ActivityComponent{
-    val fileHandler = File(".idea/gradle.xml")
+    val fileHandler = File("src/lxTrip.xml")
     val HOSTNAME = "localhost:8080"
 
     fun getTripId():String {
-        getElementFromFile("//Trip/TripKey/TripID")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/TripKey/TripID")
     }
 
     fun getTripNumber():Long {
@@ -34,11 +31,7 @@ class ActivityComponent{
     }
 
     fun getTripTitle(): String {
-        getElementFromFile("//Trip/Title")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/Title")
     }
 
     fun getWebDetailsURL():String{
@@ -49,233 +42,141 @@ class ActivityComponent{
         return HOSTNAME + "/api/trips/" + getTripId() + "/updateTripNameDescription"
     }
 
-    fun getStartDate(): Date {
+    fun getStartDate(): DateTime {
         getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/ActivityStartDateTimeInformation/Date")
                 .forEach {
-                    return (Date(it.getTextContent()));
+                    return (DateTime.parse(it.getTextContent()));
                 }
-        return Date(null)
+        return DateTime()
     }
 
     fun getStartTime(): LocalTime {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/ActivityStartDateTimeInformation/Time")
-                .forEach {
-                    val hms : Array<String>  = it.getTextContent().split(":")
-
-                    return (LocalTime.of(hms.get(0).toInt(),hms.get(1).toInt(),hms.get(2).toInt()))
-                }
-        return (LocalTime.now())
+        return getStartDate().toLocalTime()
     }
 
-    fun getEndDate(): Date {
+    fun getEndDate(): DateTime {
         getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/ActivityEndDateTimeInformation/Date")
                 .forEach {
-                    return (Date(it.getTextContent()));
+                    return (DateTime.parse(it.getTextContent()));
                 }
-        return Date(null)
+        return DateTime()
     }
 
     fun getEndTime(): LocalTime {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/ActivityEndDateTimeInformation/Time")
-                .forEach {
-                    val hms : Array<String>  = it.getTextContent().split(":")
-
-                    return (LocalTime.of(hms.get(0).toInt(),hms.get(1).toInt(),hms.get(2).toInt()))
-                }
-        return (LocalTime.now())
+        return getEndDate().toLocalTime()
     }
 
-    fun getCreateDateTime(): Date {
+    fun getCreateDateTime(): DateTime {
         getElementFromFile("//Trip/CreateDateTime")
                 .forEach {
-                    return (Date(it.getTextContent()));
+                    return (DateTime.parse(it.getTextContent()));
                 }
-        return Date(null)
+        return DateTime()
     }
 
-    fun getUpdateDateTime(): Date {
+    fun getUpdateDateTime(): DateTime {
         getElementFromFile("//Trip/UpdateDateTime")
                 .forEach {
-                    return (Date(it.getTextContent()));
+                    return (DateTime.parse(it.getTextContent()));
                 }
-        return Date(null)
+        return DateTime()
     }
 
-    fun getLastUpdateDateTime(): Date {
+    fun getLastUpdateDateTime(): DateTime {
         getElementFromFile("//ReadTripDataDetails/LastUpdateDateTime")
                 .forEach {
-                    return (Date(it.getTextContent()));
+                    return (DateTime.parse(it.getTextContent()));
                 }
-        return Date(null)
+        return DateTime()
     }
 
     fun getVoucherBarCode(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/VoucherBarCode")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/VoucherBarCode")
     }
 
     fun getVoucherSecurityCode(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherSecurityCode")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherSecurityCode")
     }
 
 
     fun getRedemptionInstructions(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/ModularizedContentList/ModularizedContent[ContentType='redemption_instructionsGroup']/Body")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/ModularizedContentList/ModularizedContent[ContentType='redemption_instructionsGroup']/Body")
     }
 
     fun getKnowBeforeYouGoGroup(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/ModularizedContentList/ModularizedContent[ContentType='know_before_you_goGroup']/Body")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/ModularizedContentList/ModularizedContent[ContentType='know_before_you_goGroup']/Body")
     }
 
-    fun getVendorBranchID(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/VendorBranchID")
+    fun getVendorBranchID(): Long {
+        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/VendorBranchId")
                 .forEach {
-                    return (it.getTextContent());
+                    return (it.getTextContent().toLong());
                 }
-        return ""
+        return 0L
     }
 
     fun getVendorName(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/VendorName")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/VendorName")
     }
 
     fun getIsRedeemer(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/TravelerInformation/Traveler/IsRedeemer")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/TravelerInformation/Traveler/IsRedeemer")
     }
 
     fun getFirstName(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/TravelerInformation/Traveler/Traveler/Person/PersonName/FirstName")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/TravelerInformation/Traveler/Traveler/Person/PersonName/FirstName")
     }
 
     fun getMiddleName(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/TravelerInformation/Traveler/Traveler/Person/PersonName/MiddleName")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/TravelerInformation/Traveler/Traveler/Person/PersonName/MiddleName")
     }
 
     fun getLastName(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/TravelerInformation/Traveler/Traveler/Person/PersonName/LastName")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/TravelerInformation/Traveler/Traveler/Person/PersonName/LastName")
     }
 
     fun getTicketCount(): String {
-        getElementFromFile("//TotalTicketPriceByCategory/TicketCount")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//TotalTicketPriceByCategory/TicketCount")
     }
 
     fun getVoucherFirstRedemptionLocation(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/VoucherRedemptionInfo/VoucherRedemptionLocationList/VoucherRedemptionLocation")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/VoucherInformationData/VoucherRedemptionInfo/VoucherRedemptionLocationList/VoucherRedemptionLocation")
     }
 
     fun getDestinationExperienceInfo(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/ActivityItem/ImageList/Image/FileURL")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/ActivityItem/ImageList/Image/FileURL")
     }
 
     fun getActivityItemTitleEnglish(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/ActivityItem/ActivityItemTitleEnglish")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/ActivityItem/ActivityItemTitleEnglish")
     }
 
     fun getActivityCategoryName(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/Activity/ActivityCategory/ActivityCategoryName")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/Activity/ActivityCategory/ActivityCategoryName")
     }
 
     fun getActivityDescription(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/Activity/ActivityDescription")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/Activity/ActivityDescription")
     }
 
     fun getActivityTitleEnglish(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/Activity/ActivityTitleEnglish")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/Activity/ActivityTitleEnglish")
     }
 
     fun getActivityID(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/Activity/ActivityID")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/Activity/ActivityID")
     }
 
     fun getActivityCategoryID(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/Activity/ActivityCategory/ActivityCategoryID")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/Activity/ActivityCategory/ActivityCategoryID")
     }
 
     fun getBusinessModel(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/BusinessModel")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/EdxItemData/BusinessModel")
     }
 
     fun getOrderLineTransactionState(): String {
-        getElementFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/OrderLineTransactionState")
-                .forEach {
-                    return (it.getTextContent());
-                }
-        return ""
+        return getElementValueFromFile("//Trip/EntityList/Entity/DestinationExperienceProductEntity/DestinationExperienceItemEntity/DestinationExperienceBookedItemEntityList/DestinationExperienceBookedItemEntity/OrderLineTransactionState")
     }
     
     fun getElementFromFile(evaluateXPath: String) :  Sequence<Element> {
@@ -283,5 +184,13 @@ class ActivityComponent{
                 .evaluateIterator(evaluateXPath)
                 .sequence()
                 .filterIsElement()
+    }
+    
+    fun getElementValueFromFile(evaluateXPath: String) : String {
+        getElementFromFile(evaluateXPath)
+                .forEach {
+                    return (it.getTextContent());
+                }
+        return ""
     }
 }
