@@ -28,6 +28,9 @@ fun main(args: Array<String>) {
 //    println(activityComponent.getStartTime())
     println(activityComponent.getWebDetailsURL())
     println(activityComponent.getUpdateTripNameDescPathURL())
+    println(activityComponent.getVoucherBarCode())
+    println(activityComponent.getVoucherSecurityCode())
+    println(activityComponent.getRedemptionInstructions())
 
 
 }
